@@ -21,6 +21,7 @@ Lauch config files generation
 ## Modifs ClearCase
 check out the document
 modify username
+Fichier > Information > Propriété > Propriétés avancées > Catégorie
 add line on history
 make modifs
 check in document
@@ -57,3 +58,8 @@ near end > machin.elf > add "-v DEBUG" at the end of the line
 
 ## Where to find specific files
 targets -> /etc/oms/
+SyID -> maintref/doc/refsol/04/010/Interfaces/
+SyAD -> maintref/doc/refsol/04/020
+
+## Sql requests
+Sur la box sqlite3 /usr/oms/var/lib/oms_uic_data.db "command"

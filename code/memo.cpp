@@ -144,6 +144,14 @@ int main(){
     }
 }
 
+//boost
+#include <boost/optional.hpp>
+boost::optional<int> optionnal_int = 1;
+boost::optional<int> optionnal_int = boost::none;
+if (boost::optional<int> oi = getOptionnalInt())
+    cout << "There is an int: " << oi;
+  else
+    cout << "There is no int";
 /* ========================================================== */
 /* ======================== REFERENCE ======================= */
 /* ========================================================== */
