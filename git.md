@@ -3,7 +3,7 @@ depuis la branch_a: `git rebase branch_b` \
 re-applique les commits faits sur branch_a au sommet de branch_b \
 montre pour chaque commit re-appliqué les conflits, et demande si on veut éditer le message -> non
 
-**Renommer** \
+**Rename** \
 `git commit --amend -m "an updated commit message"` \
 Change the name of the last commit \
 `git rebase -i HEAD~n` \
@@ -25,6 +25,11 @@ Attention si merge dans ces n derniers commits ça déconne
 - make the needed modifications, `add` them
 - `git commit --amend --no-edit`
 - `git rebase --continue`
+*If it's not the last and the modifs have already been made*
+- add the modifications
+- get the sha of the commit in which the modifications need to be add (abc34)
+- `git commit --fixup=abc34`
+- `git rebase -i --autosquash abc34~`
 
 **Modify a given commit name** \
 *If this commit is the last one*
@@ -63,3 +68,6 @@ Then for each chunk :
 - y: take modif
 - n: don't take it
 - s: split into smaller chunks
+
+**Change commit pointed by branch**
+git branch --force <branch_name> <commit_sha/branch_name>
