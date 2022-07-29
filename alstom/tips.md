@@ -5,7 +5,7 @@ windows compil pour outils débarqués
 
 ## Application des modifs
 Connection filezilla 10.25.65.231 root HL3H
-Hard:
+Hard:       \\10.1.1.254\dev\
     /dev/oms/build/ipk/<modified_ipk> -> /recovery/netbox2/packages_addon
     on the netbox:
         touch /recovery/NOW <- pour tout reflash
@@ -35,6 +35,13 @@ PYMODAL=Y TARGET=231 SUBTEST=016 ninja tr_terra
  -> on netbox 231, lauch the test 016 of terra
 OPT='-k test_Terra_006_01_01'
  -> launches only the test case test_Terra_006_01_01
+
+## Windows tests
+Installation instructions: wiki/Testing environment/pytest_modal 3.0.0
+Launching:
+    Enter into virtual test environment: C:\Users\e_wguill\.virtualenvs\pymodal\Scripts\activate
+    Go to C:\Users\e_wguill\Documents\dev\oms\test\components\swint_project_conf_gen\Automatisation
+    Launch `pytest --color=yes -v --run=tr --xml-output=modal TS_SwInt_ConfChecker_xxx.py`
 
 ## Netbox
 Ssh connection: ssh 231
@@ -76,11 +83,32 @@ submodules/simu/ground_server.py
     l.17 -> uncomment & 4334
     launch
 
+## Livraison
+- Launch alchemist with windows searchbar: it's called configuration workbench
+- Create a RTC task called "Delivery x.x.x"
+- Prendre le token de merge
+- Execute the 2.6 part of SwPM
+- In Teams/FR_SW_OMS/Livraisons, create folder LIV_OMS_Vx.x.x_ALPHAx, copy into the folder oms_delivery
+- if webportal version has changed, create folder nbx_web_portal next to oms_delivery and copy into
+  liv/build/ipk/nbx_web_portal_armv7ahf-neon.ipk
+- Message Teams du type
+    [4.4.0 ALPHA5] Binaires disponibles
+    Hello FR_SW_OMS, les binaires sont disponibles dans test LIV_OMS_V4.4.0_ALPHA5 !
+- Wait for confidence tests to be completed
+- Execute the 2.7 part of SwPM
+    2.7.2.3 -> Downlaod TR and TS = go on the CI master pipeline and click Download button in front of Report
+            -> Run the script: give previous zip file as an argument, must be admin for auto cc checks in
+            -> Create a new label: go on TypesExplorer Program, select etrainc for VOB, click list in upper bar then
+               labels, right click in the void and create for a new label and keep second dialog window open
+- Mettre le PM en relecture, rendre le token
+- In <local_path>/oms/scripts, execute archive_for_delivery.sh
+- Copy <local_path>/oms/out/oms_delivery.tar.gz in Teams, REF_SOL Teams, Sw_OMS, Files, Livraison
 
-
-
-
-
+## Utiliser le DMI
+Simulator of the interface in the train
+See wiki OMS_testing/DMI_SDK
+cd C:\Users\e_wguill\AppData\Roaming\Alstom\DMIWebInterfaceSDK
+\WebClientWISDK.exe https://serveng:HL3HcfkG@10.25.65.231/
 
 
 chpst -u oms_ground:oms:oms_core:oms_redis /usr/oms/bin/oms_terra.elf
