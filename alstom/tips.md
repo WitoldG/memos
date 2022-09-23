@@ -36,6 +36,10 @@ PYMODAL=Y TARGET=231 SUBTEST=016 ninja tr_terra
 OPT='-k test_Terra_006_01_01'
  -> launches only the test case test_Terra_006_01_01
 
+## Test if flaky
+python3 ./test/tools/analyze_ci_stability.py --filter --depth 40 --job bundle
+depth to specify the nb analysed, job to specify which job to launch
+
 ## Windows tests
 Installation instructions: wiki/Testing environment/pytest_modal 3.0.0
 Launching:
@@ -46,10 +50,6 @@ Launching:
 ## Netbox
 Ssh connection: ssh 231
 web connection: https://10.25.65.231/
-
-## Netbox bug
-sv restart oms_restapi
-sv restart oms_mgr
 
 ## Process fin ticket
 Distribute modifs into appropriated commits
@@ -84,11 +84,22 @@ submodules/simu/ground_server.py
     launch
 
 ## Livraison
-- Launch alchemist with windows searchbar: it's called configuration workbench
+- dans oms `git pull --recurse`
+- pareil dans oms/achemist-artefact/
 - Create a RTC task called "Delivery x.x.x"
 - Prendre le token de merge
+- mettre à jour les dépots de submodule pour pointer sur la version de leur master
+  - depuis oms `git submodule`
+  - regarder dans les graph de chaque submodule (surtout ceux qui ont été modif) que le dernier sha correspond à celui de l'étape précédente
+  - si màj nécessaire (ex. sur simu)
+    - go dans `submodules/simu`, `git pull --recurse`
+    - revenir dans oms `git add -p`
+    - verifier si c'est le bon commit maintenant (et pas de -dirty)
+    - puis commit avec message "[submodules][simu] Update reference ( WI xxxxxx )"
+- Launch alchemist with windows searchbar: it's called configuration workbench
+- Ouvrir le SwPM, modifs champs version, n°ticket, delivery id
 - Execute the 2.6 part of SwPM
-- In Teams/FR_SW_OMS/Livraisons, create folder LIV_OMS_Vx.x.x_ALPHAx, copy into the folder oms_delivery
+- In Teams/FR_SW_OMS/Livraisons, create folder LIV_OMS_Vx.x.x_ALPHAx, copy into the folder oms_delivery (yes folder no its content)
 - if webportal version has changed, create folder nbx_web_portal next to oms_delivery and copy into
   liv/build/ipk/nbx_web_portal_armv7ahf-neon.ipk
 - Message Teams du type
@@ -96,24 +107,49 @@ submodules/simu/ground_server.py
     Hello FR_SW_OMS, les binaires sont disponibles dans test LIV_OMS_V4.4.0_ALPHA5 !
 - Wait for confidence tests to be completed
 - Execute the 2.7 part of SwPM
-    2.7.2.3 -> Downlaod TR and TS = go on the CI master pipeline and click Download button in front of Report
+    2.7.3.3 -> Download TR and TS = go on the CI master pipeline and click Download button in front of Report
             -> Run the script: give previous zip file as an argument, must be admin for auto cc checks in
+            -> To run scrpits use Powershell and .bat from windows (update the windows oms clone)
+            -> If test scripts bugs, launch clearcase
             -> Create a new label: go on TypesExplorer Program, select etrainc for VOB, click list in upper bar then
                labels, right click in the void and create for a new label and keep second dialog window open
 - Mettre le PM en relecture, rendre le token
 - In <local_path>/oms/scripts, execute archive_for_delivery.sh
 - Copy <local_path>/oms/out/oms_delivery.tar.gz in Teams, REF_SOL Teams, Sw_OMS, Files, Livraison
 
-## Utiliser le DMI
+## Tests de confiance
+flash la box avec les sources qui ont été générées pour la livraison
+
+## Use the DMI
 Simulator of the interface in the train
 See wiki OMS_testing/DMI_SDK
 cd C:\Users\e_wguill\AppData\Roaming\Alstom\DMIWebInterfaceSDK
-\WebClientWISDK.exe https://serveng:HL3HcfkG@10.25.65.231/
+.\Browser\WebClientWISDK.exe https://serveng:HL3HcfkG@10.25.65.231/
+.\Browser\WebClientWISDK.exe https://prodadmin:n%26tS%40n8x@10.25.65.231/
+.\Browser\WebClientWISDK.exe https://maintainer:n%26tR%40n8x@10.25.65.231/
 
+## Simulator RestAPI
+Lancer à la main :
+runuser -u web_app -g web -- python3 /usr/web/simu_restapi/rest_server.py
 
 chpst -u oms_ground:oms:oms_core:oms_redis /usr/oms/bin/oms_terra.elf
 
+## Restapi simulator
+In /home/dev/simu/
+To modify what the server responds: simu/rest_api/src/server_config.json
+To deploy a new simulator version: simu/rest_api/deploy_simu.sh 10.25.65.231
+To start the simulator: simu/rest_api/start_simu.sh 10.25.65.231
+
+## Deploy
+223 -> ssh-keygen -f "/home/dev/.ssh/known_hosts" -R "10.25.65.231"
+
 ## Lancer une endurance
+Cfm endurance
+aller sur la dernière version de dev, pull et compiler
+Vérifier de bien avoir une Remote Trace config et une Remote Dashboard definition déployées sur la box avec Traintracer
+Lancer launch_endurance.sh
+
+
 Pour canaltrain endurance
 Lancer le simu avec la conf de clearcase (40/endurance/config_files) -> à copier dans usbmodules/simu/
 Modifier ground_server.py au même endroit (decommenter l.19 et mettre config.jsn en arg)
