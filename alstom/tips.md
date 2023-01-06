@@ -14,6 +14,8 @@ Hard:       \\10.1.1.254\dev\
 Soft:
     /dev/oms/build/ipk/<modified_ipk> -> /root/ipk/
     on the netbox: ipki
+Envoi binaire:
+    ninja bin/oms_terra.elf && scp bin/oms_terra.elf 234:/usr/oms/bin/
 Launch config files generation
     /dev/oms/build/ipk/oms_project_configuration_armv7ahf-neon.ipk -> /root/ipk
     on the netbox: ipki
@@ -35,6 +37,27 @@ PYMODAL=Y TARGET=231 SUBTEST=016 ninja tr_terra
  -> on netbox 231, lauch the test 016 of terra
 OPT='-k test_Terra_006_01_01'
  -> launches only the test case test_Terra_006_01_01
+### Pause / Debugging
+`import pdb`
+`pdb.set_trace()`
+
+## Use embedded tester / testeur embarqué
+- add a function in .cpp and .hpp
+- do not forget to add function in map (top of .cpp file)
+- compile needed tester `ninja storage_tester.elf`
+- transfer tester in the box (it's in `build/bin_unstripped`)
+- launch program `./storage_tester.elf <function> <output_file> <argv0> <argv1> ...`
+
+## Analyse core
+-> When binary produces "Aborted (core dumped)"
+- go into `/var/core` (in the netbox)
+- take last core and `tar -xzf <core_file> core.gz`
+- `gunzip core.gy`
+- `gdb <binary_path> core`
+(if gdb not installed, take it from Doc/tools to /recovery and `./pkg_install.sh <gdb_file>`)
+
+## Capture reseau sur box
+`tcpdump -i eth0 -w <file_name>`
 
 ## Test if flaky
 python3 ./test/tools/analyze_ci_stability.py --filter --depth 40 --job bundle
@@ -47,9 +70,25 @@ Launching:
     Go to C:\Users\e_wguill\Documents\dev\oms\test\components\swint_project_conf_gen\Automatisation
     Launch `pytest --color=yes -v --run=tr --xml-output=modal TS_SwInt_ConfChecker_xxx.py`
 
+## Tester project_conf_gen
+project_conf_gen est l'outil débarqué qu'on fournit aux clients pour qu'ils puissent générer un ipk de conf à partir de leur oms_user.json
+Pour faire le build : `./test/conf/automation/build.sh ~/oms/`
+Aller dans oms/project_conf_gen/src/out, desarchiver le zip sous windows
+Créer un dossier in/ à côté de private, y mettre le oms_user.json (et souvent un sous rep edr)
+Lancer le bat oms_project_conf_gen -> génère l'ipk dans out
+
+## Génération website
+- `cd /home/dev/oms/web/frontend`
+- `./build.sh`
+- `./setup-v2.sh`
+- l'ipk est dans `frontend/build/ipk`
+
 ## Netbox
 Ssh connection: ssh 231
 web connection: https://10.25.65.231/
+Start all services `oms start`
+Start a given service `sv start oms_storage`
+Stop all services `oms stop`
 
 ## Process fin ticket
 Distribute modifs into appropriated commits
@@ -72,8 +111,14 @@ logs -> /var/log/oms/current
 SyID -> maintref/doc/refsol/04/010/Interfaces/
 SyAD -> maintref/doc/refsol/04/020
 
-## Sql requests
-Sur la box sqlite3 /usr/oms/var/lib/oms_uic_data.db "command"
+## Database / Sql requests (persistent db)
+Sur la box `sqlite3 /usr/oms/var/lib/oms_uic_data.db "command"`
+Reset database:
+- `rm /usr/oms/var/lib/oms_uic_data.db`
+- `sv restart oms_storage`
+## Redis database (transcient db)
+`redcli scan 0 count 1000` -> show all collections
+pres in `Z:\etrainc\doc\_OMS\06_Software\999_Others\Presentations\Technical\redis_in_oms_context.pptx`
 
 ## Gdb
 Lancer un main avec gdb: ils sont dans /usr/oms/bin
@@ -88,14 +133,14 @@ submodules/simu/ground_server.py
 - pareil dans oms/achemist-artefact/
 - Create a RTC task called "Delivery x.x.x"
 - Prendre le token de merge
-- mettre à jour les dépots de submodule pour pointer sur la version de leur master
+<!-- - mettre à jour les dépots de submodule pour pointer sur la version de leur master
   - depuis oms `git submodule`
   - regarder dans les graph de chaque submodule (surtout ceux qui ont été modif) que le dernier sha correspond à celui de l'étape précédente
   - si màj nécessaire (ex. sur simu)
     - go dans `submodules/simu`, `git pull --recurse`
     - revenir dans oms `git add -p`
     - verifier si c'est le bon commit maintenant (et pas de -dirty)
-    - puis commit avec message "[submodules][simu] Update reference ( WI xxxxxx )"
+    - puis commit avec message "[submodules][simu] Update reference ( WI xxxxxx )" -->
 - Launch alchemist with windows searchbar: it's called configuration workbench
 - Ouvrir le SwPM, modifs champs version, n°ticket, delivery id
 - Execute the 2.6 part of SwPM
@@ -103,11 +148,11 @@ submodules/simu/ground_server.py
 - if webportal version has changed, create folder nbx_web_portal next to oms_delivery and copy into
   liv/build/ipk/nbx_web_portal_armv7ahf-neon.ipk
 - Message Teams du type
-    [4.4.0 ALPHA5] Binaires disponibles
-    Hello FR_SW_OMS, les binaires sont disponibles dans test LIV_OMS_V4.4.0_ALPHA5 !
+    [5.1.0 ALPHA4] Binaires disponibles
+    Hello FR_SW_OMS, les binaires sont disponibles dans test LIV_OMS_V5.1.0_ALPHA5 !
 - Wait for confidence tests to be completed
 - Execute the 2.7 part of SwPM
-    2.7.3.3 -> Download TR and TS = go on the CI master pipeline and click Download button in front of Report
+    2.7.3.3 -> Download TR and TS = go on the CI master pipeline (the one with 4 steps) and click Download button in front of Report
             -> Run the script: give previous zip file as an argument, must be admin for auto cc checks in
             -> To run scrpits use Powershell and .bat from windows (update the windows oms clone)
             -> If test scripts bugs, launch clearcase
@@ -117,8 +162,30 @@ submodules/simu/ground_server.py
 - In <local_path>/oms/scripts, execute archive_for_delivery.sh
 - Copy <local_path>/oms/out/oms_delivery.tar.gz in Teams, REF_SOL Teams, Sw_OMS, Files, Livraison
 
+## Génération à l'identique
+- Dl les binaires de livraison deouis Teams
+- checkout master, supprimer son dossier build et tout recompiler
+- faire la procédure de génération de project_conf_gen, prendre le `project_conf_gen.zip` et le mettre dans build 
+- faire la procédure de génération du website, prendre l'ipk généré et le mettre dans build 
+- copier `container/data/lxc/rootfs.tgz` dans build
+- comparer build aux binaires téléchargés avec BeyondCompare
+
 ## Tests de confiance
-flash la box avec les sources qui ont été générées pour la livraison
+### Flash de la box
+prendre tous les ipk de la livraison et les mettre sur la box dans recovery/netbox2/packages_addon
+générer l'ipk project_conf_gen avec le zip livré et le mettre au même endroit
+reflash la box, puis tester ce qu'on a à tester
+### En pratique
+pour savoir quoi tester prendre la liste dans Teams et demander aux personnes concernées comment leur truc se teste
+ne jamais utiliser les TI
+Si par exemple je veux tester ce que OMS produit quand un serveur ground lui envoie x truc, je me bidouille un serveur ground à partir de celui dans simu (voir le README) et je lance OMS de l'autre côté
+### Test end-to-end de CRL par exemple
+On veut tester le fait que OMS récupère bien une CRL à intervalle régulier sur le serveur sol, donc
+- configurer `/etc/hosts` sur la box en ajoutant la ligne `<ip_ordi> ground_simulator` (ip de la machine windows type 10.25.37.253) pour que la box puisse trouver le simulateur
+- dans `/etc/oms/terra_config.json` modifier l'url de remote crl par `ground_simulator:4334` et supprimer le proxy
+- dans `/etc/oms/mgr_config.json` modifier la monitoring period de la CRL pour la raccourcr et que le get de nouvelle CRL soit trigger bien plus souvent
+- faire un fichier de config de simu semblable à ce qui y a dans les tests, qui répond de manière constante à `remote_crl_definition` par un fichier de défnition qui pointe sur le second end-point du fichier de config du simu `remote_crl_download`
+- lancer sur la vm (depuis `submodules/simu/`) `python -m ground_server -p 4334 -c /home/dev/crl_config.json`
 
 ## Use the DMI
 Simulator of the interface in the train
@@ -143,11 +210,49 @@ To start the simulator: simu/rest_api/start_simu.sh 10.25.65.231
 ## Deploy
 223 -> ssh-keygen -f "/home/dev/.ssh/known_hosts" -R "10.25.65.231"
 
+## Se connecter à un server Traintracer
+F.e. le 5: `ssh root@10.25.65.245` mdp: root5
+busctl get-property org.freedesktop.login1 /org/freedesktop/login1 org.freedesktop.login1.Manager ScheduledShutdown <!-- savoir quand shutdown is sheduled -->
+/var/run/systemd/shutdown/scheduled <!-- fichier qui dit quand le shutdown est sheduled -->
+
+## Se connecter en liaison série
+telnet 10.26.65.200 4015
+
 ## Lancer une endurance
-Cfm endurance
+### Cfm endurance
 aller sur la dernière version de dev, pull et compiler
 Vérifier de bien avoir une Remote Trace config et une Remote Dashboard definition déployées sur la box avec Traintracer
 Lancer launch_endurance.sh
+Pour savoir si les catalogues sont bien appliqués :
+    Aller dans les events sur la box, filtrer tous les AX (AX03 ceux d'OMS, AX021 ceux de Netbox)
+    Regarder les détails des evts qui vont dire si les catalogues sont bien appliqués
+
+### Analyse endurance
+Lancer le script `test/tools/retrieve_endurance_logs.sh`
+Dans l'archive générée regarder :
+1. Dossier core -> si contient des fichiers les analyser
+2. Regarde le fichier netbow/install.org, CTRL+F "errors"
+3. Check le fichier VERSION que c'est bien le commmit attendu
+4. Dans timemachine, dans chaque csv regarder les colonnes underfow et overflow, et regarder si pour chaque ligne avec un nom on a bien un certazin nombre d'events générés (colonne 0)
+5. Aller sur train tracer
+    - dans "Event/Event import data", regarder qu'il ya  bien eu des events réguliers tout le week-end
+    - dans "Remote dashboard/Files/Files list" pareil
+    - dans "Remote Traces/Display" pareil
+6. Fichier current dans le dossier log
+    Virer
+    - tout ce qui y a les 1eres secondes/minutes
+    - ../mgr/src/device/device_state/not_present.cpp: 0045 ;NotPresent	;[Device(UIC1)] ?
+    - ../mgr/src/device/device_state/configuring.cpp: 0055 ;Configuring	;[Device(UIC1)] ?
+    - ../mgr/src/device/device_state/operational.cpp: 0045 ;Operational	;[Device(UIC1)] ?
+    - ../wsdp/src/services/WEB-EDL/1/service.cpp: 0084 ;request_new_conf	;[device: NPU-32]
+    - ../time_machine/src/time_machine_api/time_machine.cpp: 0078 ;TimeMachineManager	;Time machine library loaded
+    - ../dyco/src/atml2json/conversion_status.cpp: 0326 ;log_errors	;No errors in conversion
+    - ../dyco/src/atml2json/conversion_status.cpp: 0342 ;log_warnings	;No warnings in conversion
+    - ../terra/src/t2g/remote_traces_status_notification/ground_client.cpp: 0110 ;process_valid_transmission	;Transmission to ground successful.
+    - ../wsdp/src/services/WEB-EVT/51/server/server.cpp: 0115 ;evtNotification	;IP address 172.16.16.1 sent an automatic notification. Returning an empty response to stop its notification.
+    - ../wsdp/src/device/uic_device.cpp: 0193 ;is_remote_traces_supported	;Device UIC7 does not support remote traces, webservice WEB-TRC is missing, webservice WEB-EXTSYMB is missing
+    - ../terra/src/t2g/ground_client_base.cpp: 0131 ;send_until_success	;Retry connection
+    - ../terra/src/t2g/remote_traces_archive_notification/ground_client.cpp: 0146 ;process_valid_transmission	;Transmission to ground successful
 
 
 Pour canaltrain endurance
@@ -159,22 +264,22 @@ Modifier scrit endurance (comment l.68)
 Dans la vm, depuis build ../test/tools/launch_endurance.sh
 -> il dit avec quels parametres le lancer
 
-10213 oms_tra+  20   0  128488  52708  21916 S   4.0  5.5   0:33.30 WSDP_main
-10214 oms_tra+  20   0   25912  23252   3612 S   0.0  2.4   0:00.03 oms_tcms2diag_s
-10252 oms_tra+  20   0   21868  20860   1244 S   0.0  2.2   0:00.03 T2D_CLIENT_main
-10250 oms_core  20   0   49148  18372  10656 S   1.7  1.9   0:27.02 MGR_main
-10242 oms_core  20   0   37284  15728   8892 S   0.0  1.6   0:01.32 STORAGE_main
-10209 oms_gro+  20   0  142976  14456  11584 S   0.0  1.5   0:00.72 TERRA_main
-10599 root     -39   0   21232  13716  12416 S   1.0  1.4   0:10.18 CIPDP_main
-10207 oms_res+  20   0   75576  10532   9488 S   0.0  1.1   0:00.29 oms_restapi.elf
-0212 oms_tra+  20   0   24504   9864   8964 S   0.0  1.0   0:00.42 VDP_main
+## Documentation
+events -> \maintref\doc\RefSol\04_System\010_Specification\Interfaces\SyID_RefSol_UIC559_External_Interfaces.docx
 
-10213 oms_tra+  20   0  128488  52724  21916 S   5.0  5.5 126:38.52 WSDP_main
-10214 oms_tra+  20   0   25912  23252   3612 S   0.0  2.4   0:00.03 oms_tcms2diag_s
-10252 oms_tra+  20   0   21868  20860   1244 S   0.0  2.2   0:00.85 T2D_CLIENT_main
-10250 oms_core  20   0   50304  19380  10656 S   1.7  2.0 109:42.95 MGR_main
-10209 oms_gro+  20   0  145616  17268  11784 S   0.0  1.8   2:09.42 TERRA_main
-10242 oms_core  20   0   37284  15728   8892 S   0.0  1.6   0:10.80 STORAGE_main
-10599 root     -39   0   21232  13716  12416 S   0.7  1.4  42:45.19 CIPDP_main
-10207 oms_res+  20   0   75576  10532   9488 S   0.0  1.1   1:05.76 oms_restapi.elf
-10212 oms_tra+  20   0   24504   9864   8964 S   0.3  1.0   1:32.97 VDP_main
+## Fonctionnement MGR Terra
+Par ex RSU
+1. MGR envoie sur le bus un message qui trigger le callback terra/src/bus_handler.hpp:on_request_remote_software_upload_definition (dans le thread bus)
+2. Dans terra/src/t2g/ground_client_base.cpp:add_pulse (thread main) on ajoute le pulse dans une queue pour qu'il soit consommé par le thread concerné
+3. Dans terra/src/t2g/rsud/ground_client.cpp:handle_pulse (thread RSU) le pulse est récupéré
+4. terra/src/t2g/ground_client_base.cpp:send_until_success est appelé
+5. terra/src/t2g/ground_client_base.cpp:run_http_client est appelé (il utilise les fonctions de type create_http_header)
+6. terra/src/t2g/ground_client_base.cpp:process_response est appelé
+7. Cette fonction redistribue sur les fonctions dans ls différents t2g
+
+## Simuler appel bus
+`redcli PUBLISH message_type_name msg`
+`redcli PSUBSCRIBE message_type_name`
+ex: test si terra gère le reques de CRL
+`redcli PUBLISH REMOTE_CRL_DEFINITION_C2P_CH '{"request_id": "0001"}'`
+`redcli psubscribe REMOTE_CRL_DEFINITION_P2C_CH`

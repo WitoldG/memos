@@ -132,15 +132,19 @@ double val = std::get<0>(my_tuple)
 /* ========================================================== */
 /!\ C++17
 #include <optional>
-using namespace std;
-optional<int> fn(bool a){
+std::optional<int> fn(bool a){
     if (a) {return 2;}                  // 1st way to return
     else {return nullopt; return{};}
     return b? 2: nullopt;               // 2nd way to return
+    // in return int automatically cast in optional
+    // but in variable affectation need:
+    std::optional<int> c = b ? std::make_optional(2): std::nullopt,
 }
 int main(){
-    if (int a = fn(true)){
-        cout << a;
+    auto a = fn(true);
+    if (a){
+        *a;     // to use directly
+        a->att; // to use attributes
     }
 }
 
