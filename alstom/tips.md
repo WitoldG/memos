@@ -119,6 +119,24 @@ Reset database:
 ## Redis database (transcient db)
 `redcli scan 0 count 1000` -> show all collections
 pres in `Z:\etrainc\doc\_OMS\06_Software\999_Others\Presentations\Technical\redis_in_oms_context.pptx`
+remote_software_upload_definition|{"identifier":"first_definition_identifier","name":"first_name","version":"1","size_in_bytes":300000,"software_item_definitions":[{"identifier":"first_si_identifier","hash":"first_si_hash","name":"first_si","description":"first si description","date":"19-07-96","version":"1","type":"file","size_in_bytes":300000,"generated_id":"first_oms_identifier","reprog_delay_in_sec":30,"checksum":"first_si_checksum","url":"first_si_url"},{"identifier":"second_si_identifier","hash":"second_si_hash","name":"second_si","description":"second si description","date":"19-07-96","version":"1","type":"file","size_in_bytes":300000,"generated_id":"second_oms_identifier","reprog_delay_in_sec":30,"checksum":"second_si_checksum","url":"second_si_url"}]}
+
+A TRAITEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEER
+remote_software_upload_repository_status|1
+remote_software_upload_definition_identifier|first_definition_identifier
+remote_software_upload_definition|{\"identifier\":\"first_definition_identifier\",\"name\":\"first_name\",\"version\":\"1\",\"size_in_bytes\":300000,\"software_item_definitions\":[{\"identifier\":\"first_si_identifier\",\"hash\":\"first_si_hash\",\"name\":\"first_si\",\"description\":\"first si description\",\"date\":\"19-07-96\",\"version\":\"1\",\"type\":\"file\",\"size_in_bytes\":300000,\"generated_id\":\"first_oms_identifier\",\"reprog_delay_in_sec\":30,\"checksum\":\"first_si_checksum\",\"url\":\"first_si_url\"},{\"identifier\":\"second_si_identifier\",\"hash\":\"second_si_hash\",\"name\":\"second_si\",\"description\":\"second si description\",\"date\":\"19-07-96\",\"version\":\"1\",\"type\":\"file\",\"size_in_bytes\":300000,\"generated_id\":\"second_oms_identifier\",\"reprog_delay_in_sec\":30,\"checksum\":\"second_si_checksum\",\"url\":\"second_si_url\"}]}
+remote_software_upload_repository_status|4
+
+[root@netbox-000000000000145 /usr/web/oms]$ redcli hgetall remote_software_hash
+1) "second_oms_identifier"
+2) "{\"status\":\"synchronized\",\"path\":\"1ed7e345-89fa-5c85-900d-7a37ea2e7742/\"}"
+3) "first_oms_identifier"
+4) "{\"status\":\"synchronized\",\"path\":\"1ed7e345-89fa-5c85-900d-7a37ea2e7742/\"}"
+
+
+sqlite3 /usr/oms/var/lib/oms_uic_data.db "UPDATE KeyValue SET Value = '{\"identifier\":\"first_definition_identifier\",\"name\":\"first_name\",\"version\":\"1\",\tions\":[{\"identifier\":\"first_si_identifier\",\"hash\":\"first_si_hash\",\"name\":\"first_si\",\"description\":\"first si description\",\"date\":\"19-07-96\",\"version\":\"1\",\"type\":\"file\first_oms_identifier\",\"reprog_delay_in_sec\":30,\"checksum\":\"first_si_checksum\",\"url\":\"first_si_url\"},{\"identifier\":\"second_si_identifier\",\"hash\":\"second_si_hash\",\"name\":\"secon\",\"date\":\"19-07-96\",\"version\":\"1\",\"type\":\"file\",\"size_in_bytes\":300000,\"generated_id\":\"second_oms_identifier\",\"reprog_delay_in_sec\":30,\"checksum\":\"second_si_checksum\",\"e_software_upload_definition'"
+JUSQICIIIIIIIIIIIIIIIIIIII
+
 
 ## Gdb
 Lancer un main avec gdb: ils sont dans /usr/oms/bin
@@ -127,6 +145,11 @@ Lancer un main avec gdb: ils sont dans /usr/oms/bin
 submodules/simu/ground_server.py
     l.17 -> uncomment & 4334
     launch
+
+## Netbox directories
+`/var/log/oms/current` logs classiques
+`/var/log/auth/current` logs auth
+`/usr/oms/var` crl storage
 
 ## Livraison
 - dans oms `git pull --recurse`
@@ -186,6 +209,12 @@ On veut tester le fait que OMS récupère bien une CRL à intervalle régulier s
 - dans `/etc/oms/mgr_config.json` modifier la monitoring period de la CRL pour la raccourcr et que le get de nouvelle CRL soit trigger bien plus souvent
 - faire un fichier de config de simu semblable à ce qui y a dans les tests, qui répond de manière constante à `remote_crl_definition` par un fichier de défnition qui pointe sur le second end-point du fichier de config du simu `remote_crl_download`
 - lancer sur la vm (depuis `submodules/simu/`) `python -m ground_server -p 4334 -c /home/dev/crl_config.json`
+### Test end-to-end général
+- configurer `/etc/hosts` sur la box en ajoutant la ligne `<ip_ordi> ground_simulator`
+- dans `/etc/oms/terra_config.json` modifier l'url de ce dont on a besoin par `ground_simulator:4334` et supprimer le proxy
+- lancer sur la vm (depuis `submodules/simu/`) `python -m ground_server -p 4334 ground_server/config.json`
+
+
 
 ## Use the DMI
 Simulator of the interface in the train
@@ -283,3 +312,11 @@ Par ex RSU
 ex: test si terra gère le reques de CRL
 `redcli PUBLISH REMOTE_CRL_DEFINITION_C2P_CH '{"request_id": "0001"}'`
 `redcli psubscribe REMOTE_CRL_DEFINITION_P2C_CH`
+
+## Espionner le bus
+`redcli PSUBSCRIBE "*"`
+Mesasages initiate : provider pret pour rep à mgr
+AUTHORIZATION_C2P_CH : mgr dit  à terra de balancer des notifs periodiques
+REMOTE_LOG_DOWNLOAD_MANAGER_C2P_CH: mgr dit à Terra de recup uun rldm
+REMOTE_LOG_DOWNLOAD_MANAGER_P2C_CH terra repond ce qu'il a recup
+    si que req_id il a rien recup sinon il serait a cote
