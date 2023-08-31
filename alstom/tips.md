@@ -21,16 +21,6 @@ Launch config files generation
     on the netbox: ipki
     reboot; exit
 
-## Modifs ClearCase
-check out the document
-modify username
-Fichier > Information > Propriété > Propriétés avancées > Catégorie
-add line on history
-make modifs
-check in document
-Teams > Relectures doc: copy new rev in Files
-Create new conversation
-
 ## Tests launch
 https://wiki-vbn.alstom.hub/xwiki/wiki/wikipes/view/wikiPES/OMS_testing/#HRuntests
 PYMODAL=Y TARGET=231 SUBTEST=016 ninja tr_terra
@@ -48,16 +38,8 @@ OPT='-k test_Terra_006_01_01'
 - transfer tester in the box (it's in `build/bin_unstripped`)
 - launch program `./storage_tester.elf <function> <output_file> <argv0> <argv1> ...`
 
-## Analyse core
--> When binary produces "Aborted (core dumped)"
-- go into `/var/core` (in the netbox)
-- take last core and `tar -xzf <core_file> core.gz`
-- `gunzip core.gy`
-- `gdb <binary_path> core`
-(if gdb not installed, take it from Doc/tools to /recovery and `./pkg_install.sh <gdb_file>`)
-
 ## Capture reseau sur box
-`tcpdump -i eth0 -w <file_name>`
+`tcpdump -i eth0 -w <file_name.pcap>`
 
 ## Test if flaky
 python3 ./test/tools/analyze_ci_stability.py --filter --depth 40 --job bundle
@@ -66,9 +48,27 @@ depth to specify the nb analysed, job to specify which job to launch
 ## Windows tests
 Installation instructions: wiki/Testing environment/pytest_modal 3.0.0
 Launching:
-    Enter into virtual test environment: C:\Users\e_wguill\.virtualenvs\pymodal\Scripts\activate
-    Go to C:\Users\e_wguill\Documents\dev\oms\test\components\swint_project_conf_gen\Automatisation
-    Launch `pytest --color=yes -v --run=tr --xml-output=modal TS_SwInt_ConfChecker_xxx.py`
+Execute `bw` from Linux\
+Enter into virtual test environment: `C:\Users\e_wguill\.virtualenvs\pymodal\Scripts\activate`\
+    if it doesn't work, open Powershell as admin `set-executionpolicy unrestricted`\
+Go to C:\Users\e_wguill\Documents\dev\oms\test\components\swint_project_conf_gen\Automatisation\
+Launch `pytest --color=yes -v --run=tr --xml-output=modal TS_SwInt_ConfChecker_xxx.py`
+
+``` bash
+cd C:\Users\e_wguill\.virtualenvs\pymodal\Scripts\
+.\activate
+cd C:\Users\e_wguill\Documents\dev\oms\test\components\swint_configuration\Automatisation
+pytest --color=yes -v --run=tr --xml-output=modal TS_SwInt_ConfChecker_001.py
+```
+Debug C++:
+
+``` cpp
+#include <iostream>
+#include <fstream>
+std::ofstream outfile;
+this->outfile.open("C:\\Users\\e_wguill\\Documents\\tmp\\wgu_out_file.txt", std::ios::out);
+this->outfile << "Log" << "\n";
+```
 
 ## Tester project_conf_gen
 project_conf_gen est l'outil débarqué qu'on fournit aux clients pour qu'ils puissent générer un ipk de conf à partir de leur oms_user.json
@@ -90,26 +90,9 @@ Start all services `oms start`
 Start a given service `sv start oms_storage`
 Stop all services `oms stop`
 
-## Process fin ticket
-Distribute modifs into appropriated commits
-git fecth dev
-git rebase dev
-./tools/lazybox/clang_format.sh
-merge request
-
-## Conventions
-branch: wgu/ticket_nb/title
-formatting script: /tools/lazybox/clangformat.sh
-
 ## Log Debug
 Netbox > /etc/sv/oms_mgr/run
 near end > machin.elf > add "-v DEBUG" at the end of the line
-
-## Where to find specific files
-targets -> /etc/oms/
-logs -> /var/log/oms/current
-SyID -> maintref/doc/refsol/04/010/Interfaces/
-SyAD -> maintref/doc/refsol/04/020
 
 ## Database / Sql requests (persistent db)
 Sur la box `sqlite3 /usr/oms/var/lib/oms_uic_data.db "command"`
@@ -152,28 +135,6 @@ submodules/simu/ground_server.py
 `/usr/oms/var` crl storage
 
 ## Livraison
-- dans oms `git pull --recurse`
-- pareil dans oms/achemist-artefact/
-- Create a RTC task called "Delivery x.x.x"
-- Prendre le token de merge
-<!-- - mettre à jour les dépots de submodule pour pointer sur la version de leur master
-  - depuis oms `git submodule`
-  - regarder dans les graph de chaque submodule (surtout ceux qui ont été modif) que le dernier sha correspond à celui de l'étape précédente
-  - si màj nécessaire (ex. sur simu)
-    - go dans `submodules/simu`, `git pull --recurse`
-    - revenir dans oms `git add -p`
-    - verifier si c'est le bon commit maintenant (et pas de -dirty)
-    - puis commit avec message "[submodules][simu] Update reference ( WI xxxxxx )" -->
-- Launch alchemist with windows searchbar: it's called configuration workbench
-- Ouvrir le SwPM, modifs champs version, n°ticket, delivery id
-- Execute the 2.6 part of SwPM
-- In Teams/FR_SW_OMS/Livraisons, create folder LIV_OMS_Vx.x.x_ALPHAx, copy into the folder oms_delivery (yes folder no its content)
-- if webportal version has changed, create folder nbx_web_portal next to oms_delivery and copy into
-  liv/build/ipk/nbx_web_portal_armv7ahf-neon.ipk
-- Message Teams du type
-    [5.1.0 ALPHA4] Binaires disponibles
-    Hello FR_SW_OMS, les binaires sont disponibles dans test LIV_OMS_V5.1.0_ALPHA5 !
-- Wait for confidence tests to be completed
 - Execute the 2.7 part of SwPM
     2.7.3.3 -> Download TR and TS = go on the CI master pipeline (the one with 4 steps) and click Download button in front of Report
             -> Run the script: give previous zip file as an argument, must be admin for auto cc checks in
@@ -182,8 +143,8 @@ submodules/simu/ground_server.py
             -> Create a new label: go on TypesExplorer Program, select etrainc for VOB, click list in upper bar then
                labels, right click in the void and create for a new label and keep second dialog window open
 - Mettre le PM en relecture, rendre le token
-- In <local_path>/oms/scripts, execute archive_for_delivery.sh
-- Copy <local_path>/oms/out/oms_delivery.tar.gz in Teams, REF_SOL Teams, Sw_OMS, Files, Livraison
+<!-- - In <local_path>/oms/scripts, execute archive_for_delivery.sh
+- Copy <local_path>/oms/out/oms_delivery.tar.gz in Teams, REF_SOL Teams, Sw_OMS, Files, Livraison -->
 
 ## Génération à l'identique
 - Dl les binaires de livraison deouis Teams
@@ -215,6 +176,22 @@ On veut tester le fait que OMS récupère bien une CRL à intervalle régulier s
 - lancer sur la vm (depuis `submodules/simu/`) `python -m ground_server -p 4334 ground_server/config.json`
 
 
+## Setup le simulateur ground_server
+En utilisant des certificats
+- lancer le script install_ground_server.sh, avec le ca de `test/components/swint_end_to_end/input/config/certificates/CFM/ca.pem`
+- lancer le ground server (depuis `submodules/simu/`) : `sudo python -m ground_server -p 443 -c ground_server/input/config.json`
+    -> pour le port, soit 443, alors pas besoin de modif la config, mais lancement du ground_serveur en sudo et le port doit être forwardé sur la vm
+                     soit 4334, alors pas besoin de toucher à la VM, mais faut ajouter le port dans les URL (config et SI)
+    -> si besoin de debug, regarder les logs OMS et SQUID
+/!\ Prendre le bon ca.pem !
+/!\ On doit forcément utiliser les URL CFM 6.7.0 pour que ça fonctionne (dans le hosts et le terra_config.json)
+    sed -i -e "s,http://com-traintracer-pprod,http://preprod-com-traintracer," /etc/oms/terra_config.json
+    10.25.37.253 preprod-com-traintracer.alstom.hub
+
+## Proxy pout test
+
+## Soap UI
+Au lancement pour obtenir les services d'OMS -> https://wiki-vbn.alstom.hub/xwiki/wiki/wikipes/view/Produits/OMS/OMS_testing/#HLoadworkspace
 
 ## Use the DMI
 Simulator of the interface in the train
@@ -250,7 +227,7 @@ telnet 10.26.65.200 4015
 ## Lancer une endurance
 ### Cfm endurance
 aller sur la dernière version de dev, pull et compiler
-Vérifier de bien avoir une Remote Trace config et une Remote Dashboard definition déployées sur la box avec Traintracer
+Vérifier de bien avoir une Remote Trace config et une Remote Dashboard definition déployées sur la box avec Traintracer (id:e_wguill ou log direct sur Chrome)
 Lancer launch_endurance.sh
 Pour savoir si les catalogues sont bien appliqués :
     Aller dans les events sur la box, filtrer tous les AX (AX03 ceux d'OMS, AX021 ceux de Netbox)
@@ -320,3 +297,49 @@ AUTHORIZATION_C2P_CH : mgr dit  à terra de balancer des notifs periodiques
 REMOTE_LOG_DOWNLOAD_MANAGER_C2P_CH: mgr dit à Terra de recup uun rldm
 REMOTE_LOG_DOWNLOAD_MANAGER_P2C_CH terra repond ce qu'il a recup
     si que req_id il a rien recup sinon il serait a cote
+
+## SOAP UI configuration
+- Configurer le device dont on veut se servir pour qu'ilpointe sur l'adr ip de notre pc
+"{\"req_id\":\"873aeb3a-4435-4131-b15d-dd9e5cac1c7b\",\"device_name\":\"netbox\",\"selected_traces_ids\":[],\"next_request_timeout_s\":30}"
+```xml
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="urn:WEB-TRC" xmlns:urn1="urn:WEB-COMTRC">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <urn:GetTracerConfigurationResponse>
+         <urn:Configuration>
+            <!--Zero or more repetitions:-->
+            <urn1:TraceSummary>
+               <urn1:TraceId>1</urn1:TraceId>
+               <urn1:TraceName>name</urn1:TraceName>
+               <urn1:TraceType>DASHBOARD</urn1:TraceType>
+               <urn1:DefinitionType>CUSTOM</urn1:DefinitionType>
+               <urn1:DelayedTrace>false</urn1:DelayedTrace>
+               <!--1 or more repetitions:-->
+               <urn1:Pn Pi="0" Si=""/>
+               <!--Optional:-->
+               <urn1:FilmInfo TraceSize="10" NbFilm="8" OldestFilm="3"/>
+               <urn1:TraceState>DISABLED</urn1:TraceState>
+            </urn1:TraceSummary>
+            <!--Zero or more repetitions:-->
+            <urn1:SoftSummary Pi="0" Si=""/>
+            <urn1:TotalUsedSize>4096</urn1:TotalUsedSize>
+            <urn1:TotalSize>8192</urn1:TotalSize>
+         </urn:Configuration>
+      </urn:GetTracerConfigurationResponse>
+   </soapenv:Body>
+</soapenv:Envelope>
+```
+
+
+## Simu CIP not working
+Go on train tracer server `ssh 245` mdp:root5
+`/root/bridgeUp.sh`simu
+`sh /usr/fleetsimulator/simu/tcms2diag_server/vv_oms/stop_t2d.sh ; sh /usr/fleetsimulator/pycip/vv_oms/stop_pycip.sh`
+`sh /usr/fleetsimulator/simu/tcms2diag_server/vv_oms/start_t2d.sh &>/dev/null`
+`sh /usr/fleetsimulator/pycip/vv_oms/run_all.sh &>/dev/null`
+reboot la box
+
+# Mdp
+root        Hl3HcfkG
+prodeng     Hl3HcfkG
+prodadmin   n&tS@n8x

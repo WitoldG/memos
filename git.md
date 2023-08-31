@@ -62,6 +62,10 @@ after this pointer are forgotten
 git reset HEAD~n --soft \
 unknit the n last commits, allow to reorganize them differently
 
+**Git revert**
+specific file
+git checkout <commit_sha> -- <path>
+
 **Git add interactive** \
 `git add -p <file>` \
 Then for each chunk :
@@ -71,3 +75,8 @@ Then for each chunk :
 
 **Change commit pointed by branch**
 git branch --force <branch_name> <commit_sha/branch_name>
+
+**Submodule**
+If problem:
+`git submodule sync`
+`git submodule update --init --recursive`

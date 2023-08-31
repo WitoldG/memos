@@ -128,6 +128,20 @@ double val = std::get<0>(my_tuple)
 
 
 /* ========================================================== */
+/* ========================== MAP =========================== */
+/* ========================================================== */
+std::map<std::string, int> my_map{      // Creation
+  {"CPU", 10},
+  {"GPU", 15},
+  {"RAM", 20}};
+my_map["CPU"];       // Get
+my_map["CPU"] = 25;  // Update
+my_map["SSD"] = 30;  // Add
+for (auto it = my_map.begin(); it != my_map.end(); it++) // Loop through
+    {it->first /*key*/; it->second /*value*/}
+
+
+/* ========================================================== */
 /* ======================== OPTION ========================== */
 /* ========================================================== */
 /!\ C++17
@@ -197,6 +211,13 @@ instruction to the compiler not to place the instructions at another address in 
 so the execution wont need to follow 2 address redirections, avoiding time consuming operations
 compared to the execution time of small funcions body
 compiler may not perform inlining if loop, static variables, recursive, return statement, switch, goto 
+
+/* ========================================================== */
+/* ========================= RANDOM ========================= */
+/* ========================================================== */
+#include <cstdlib>
+std::srand(std::time(nullptr));
+int random_variable = std::rand(); //between 0 and RANDMAX (implementation dependant, at least 32767)
 
 /* ========================================================== */
 /* ======================== NAMESPACE ======================= */
