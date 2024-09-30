@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Mémo Witold Html</title>
+</head>
+
+<p> Create a paragraph
+<br /> Revenir à la ligne
+<hn> n in [[1,6]] create titles
+<em> highlight text
+<strong> really highlight text
+<ul> Liste à puces
+  <li> Premier élément </li>
+  <li> Deuxième élément </li>
+</ul>
+<ol> Liste ordonnée
+  <li> Premier élément </li>
+  <li> Deuxième élément </li>
+</ol>
+<
+<a href="https://openclassrooms.com">Créer un lien vers OpenClassrooms</a>
+  remplacer les & par des &amp
+<a href="contenu/page2.html">Aller à une aute page dans l'ordi</a>
+<a href="#mon_ancre">Aller vers l'ancre</a>
+  nécessite un objet ancré : <h2 id="mon_ancre">Titre</h2>
+<a href="ancres.html#cuisine">Aller à la page ancre.html, à l'ancre cuisine</a>
+<a href="https://" title="Afficher box lors du survol !">OpenClassrooms</a>
+<a href="https://" target="_blank">Forcer ouverture dans nouvel onglet</a>
+<a href="mailto:witold.guillaume@yahoo.com">Lien pour envoyer e-mail</a>
+<a href="monfichier.zip">Télécharger le fichier (suffit que fichier != page web)</a>
+
+<img src="chemin" alt="Texte descriptif" title="Infobulle pour survol"/>
+  Doit être placé dans un <p>
+  Formats:
+    Photo : jpg
+    Graphique : png(8 ou 24 bits selon nb couleurs)
+    Animé : gif
+  Placer une miniature qui renvoie sur l'image
+    <a href="img/montagne.jpg"><img src="img/montagne_mini.jpg"
+    alt="Photo de montagne" title="Cliquez pour agrandir" /></a>
+
+<figure> Place un objet avec une légende
+  <img src="images/blocnotes.png" alt="Bloc-Notes" />
+  <figcaption>Le logiciel Bloc-Notes</figcaption>
+</figure>
+  Dans ce cas l'image n'a pas besoin d'être dans un <p>
+
+<!-- Balise n'appliquant aucun style, servant aux class et id -->
+<span> type inline (genre strong)
+<div> type block (genre p)
+
+
+<!-- Balises de mise en forme -->
+<header> en-tête
+<footer> pied de page
+<nav> menu de navigation, on met généralement une liste à puces dedans
+<section> Créer différentes boîtes
+<aside> informations complémentaires (généralement mis sur le côté)
+<article> englobe portion autonome de la page pouvant être reprise
+
+
+<!-- Tableaux -->
+<table> Début d'un tableau
+<caption> Titre du tableau
+<tr> Début d'une ligne
+<td> Début d'une cellule
+  colspan (fusionner cellules horizontalement)
+  rowspan (fusionner cellules verticalement)
+<th> Cellules de la ligne d'en-tête
+<thead>, <tbody>, <tfoot> définit 3 parties dans le tableau
+
+
+<!-- Formulaires -->
+"<form method="post" action="prgm.php"> Début formulaire <!-- get->passe par url, post->non -->
+"  On doit foutre tous les trucs dans un <p>
+<input type="text" name="pseudo" /> Zone de texte à remplir
+  size: taille
+  maxlengtgh: longueur maximale du contenu
+  value: préremplissage
+  placeholder: texte qui disparait dès que t'écris
+  type= "text" / "password" / "email" / "url" / "tel" / "color" /
+        "number" (ajout min, max, step) / "range" (curseur) /
+        "date" / "time" / "week" / "month" / "datetime-local" /
+        "search" /
+        "checkbox" (on met un input par valeur) /
+        "radio" (tous le même name mais pas la même value (on met id=value))
+  autofocus
+  required (obligé de le remplir)
+<label for="pseudo">Votre pseudo</label> : <input type="text" name="pseudo" id="pseudo" />
+<textarea name="ameliorer" id="ameliorer">Valeur par défaut</textarea> Pour long texte
+
+<select name="machin"> Liste déroulante
+  <optgroup label="Europe">
+    <option value="france">France</option>
+    <option value="espagne">Espagne</option>
+    <option value="italie">Italie</option>
+    <option value="royaume-uni">Royaume-Uni</option>
+  </optgroup>
+  <optgroup label="Amérique">
+    <option value="canada">Canada</option>
+    <option value="etats-unis">Etats-Unis</option>
+  </optgroup>
+</select> (utilise selcted pour en mettre une par defaut)
+
+<input type="checkbox" name="case" id="case" /> <label for="case">Ma case à cocher</label>
+<!-- Mettre texte dans label permet pouvoir cliquer sur texte (for associé à id) -->
+
+Aimez-vous les frites ?
+<input type="radio" name="frites" value="oui" id="oui" checked="checked" /> <label for="oui">Oui</label>
+<input type="radio" name="frites" value="non" id="non" /> <label for="non">Non</label>
+
+<fieldset>Regrouper infos par groupe pour faciliter leur traitement
+  <legend>Titre du fieldselect</legend>
+</fieldset>
+
+<input type="submit" value="Envoyer"> envoie le Formulaire, conduit à la page indiquée dans l'attribut actiondu formulaire.
+<input type="reset"> Remise à zéro du formulaire
+<input type="image" src="url_de_l'image"> comme submit avec une image
+<input type="button"> bouton géré en js pour executer actions sur la page
+
+<!-- escaping -->
+&lt <
+&gt >
+&amp &
