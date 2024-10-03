@@ -1,3 +1,6 @@
+A faire : fonctions avancées que j aime bien
+réviser data types de base: vecteor..
+
 /* ========================================================== */
 /* ======================= VARIABLES ======================== */
 /* ========================================================== */
@@ -15,6 +18,25 @@ const int a = 1; // constant variable
 constexpr int a = 1; // variable or function to be evaluated at compile time
 auto //makes type inference
 
+
+/* ========================================================== */
+/* ===================== GOOD PRACTICES ===================== */
+/* ========================================================== */
+- Constants in const constexpr in top of file
+
+
+/* ========================================================== */
+/* ======================== KEYWORDS ======================== */
+/* ========================================================== */
+static
+free variable or function: accessible only in the given file, not seen by linker
+variable in a function: allocated once for lifetime of program
+class attribute: shared among all calass instances, can only be initialized from class name, not class object
+class method: can be called without instance
+inline
+compile-time instruction
+
+
 /* ========================================================== */
 /* ======================= OPERATIONS ======================= */
 /* ========================================================== */
@@ -24,6 +46,7 @@ Like C
 max(x, y); min(x, y); // basic functions
 sqrt(), round(), log(), abs(), cos(), pow(), sin(), log()/*ln*/, log10() // #include <cmath>
 ceilf(fl) == fl // tests if float fl is an integer
+
 
 /* ========================================================== */
 /* ========================= STRING ========================= */
@@ -39,9 +62,11 @@ c++ string type different than char*
 stra + strb                         // concatenation
 stra.append(strb)                   // concatenation
 stra.length(); stra.size();         // length
+for(char& c : str)                  // iterate through chars
 str[a];                             // for access or modification
 std::count(s.begin(), s.end(), '_');// count occurences of _ (include <algorithm>)
 std::cout << std::string(100, '*')  // print char n times
+
 
 /* ========================================================== */
 /* ======================= CONDITIONS ======================= */
@@ -139,7 +164,11 @@ my_map["CPU"] = 25;  // Update
 my_map["SSD"] = 30;  // Add
 for (auto it = my_map.begin(); it != my_map.end(); it++) // Loop through
     {it->first /*key*/; it->second /*value*/}
-
+static void print_map() // Print
+{
+    for (auto it = my_map.begin(); it != my_map.end(); it++)
+    {std::cout << it->first << " -> " << it->second << "\n";}
+}
 
 /* ========================================================== */
 /* ======================== OPTION ========================== */
@@ -170,6 +199,8 @@ if (boost::optional<int> oi = getOptionnalInt())
     cout << "There is an int: " << oi;
   else
     cout << "There is no int";
+
+
 /* ========================================================== */
 /* ======================== REFERENCE ======================= */
 /* ========================================================== */
@@ -186,6 +217,7 @@ Always initialized, no null handling -> doesnt permit to go through arrays like 
 Null pointer: nullptr
 	tests: if (p==nullptr)
 
+
 /* ========================================================== */
 /* ========================= PRINT ========================== */
 /* ========================================================== */
@@ -195,11 +227,13 @@ cout << "I am " << myAge << " years old."; // concatenation
 #include <iostream>
 using namespace std;
 
+
 /* ========================================================== */
 /* ========================= INPUT ========================== */
 /* ========================================================== */
 int x;
 cin >> x;
+
 
 /* ========================================================== */
 /* ======================== FUNCTIONS ======================= */
@@ -212,12 +246,14 @@ so the execution wont need to follow 2 address redirections, avoiding time consu
 compared to the execution time of small funcions body
 compiler may not perform inlining if loop, static variables, recursive, return statement, switch, goto 
 
+
 /* ========================================================== */
 /* ========================= RANDOM ========================= */
 /* ========================================================== */
 #include <cstdlib>
 std::srand(std::time(nullptr));
 int random_variable = std::rand(); //between 0 and RANDMAX (implementation dependant, at least 32767)
+
 
 /* ========================================================== */
 /* ======================== NAMESPACE ======================= */
@@ -332,19 +368,19 @@ Vector v(3);
 //abstract class an instanciation example
 class Container {
 public:
-     virtual double& operator[](int) = 0;     // pure virtual function
-     virtual int size() const = 0;            // const member function (§4.2.1)
-     virtual ~Container() {}                  // destructor (§4.2.2)
+    virtual double& operator[](int) = 0;     // pure virtual function
+    virtual int size() const = 0;            // const member function (§4.2.1)
+    virtual ~Container() {}                  // destructor (§4.2.2)
 };
 class Vector_container : public Container {   // Vector_container implements Container
 public:
-     Vector_container(int s) : v(s) { }   // Vector of s elements
-     ~Vector_container() {}
+    Vector_container(int s) : v(s) { }   // Vector of s elements
+    ~Vector_container() {}
 
-     double& operator[](int i) override { return v[i]; }
-     int size() const override { return v.size(); }
+    double& operator[](int i) override { return v[i]; }
+    int size() const override { return v.size(); }
 private:
-     Vector v;
+    Vector v;
 };
 user-defined type to represent a concept in a program
 constructor
@@ -434,6 +470,37 @@ This conversion is implicit, when we dont want to we use
 
 
 /* ========================================================== */
+/* ======================= TEMPLATES ======================== */
+/* ========================================================== */
+Class or method with variable type(s)
+template <typename T> class Array {
+private:
+    T* ptr;
+    int size;
+
+public:
+    Array(T arr[], int s);
+    void print();
+};
+
+template <typename T> Array<T>::Array(T arr[], int s)
+{
+    ptr = new T[s];
+    size = s;
+    for (int i = 0; i < size; i++)
+        ptr[i] = arr[i];
+}
+
+template <typename T> void Array<T>::print()
+{
+    for (int i = 0; i < size; i++)
+        cout << " " << *(ptr + i);
+    cout << endl;
+}
+
+
+
+/* ========================================================== */
 /* ======================== THREADS ========================= */
 /* ========================================================== */
 Make main thread wait for worker thread to finish an operation
@@ -459,6 +526,22 @@ Make main thread wait for worker thread to finish an operation
 Make thread sleep
 #include <thread>
 this_thread.sleep_for(chrono::seconds(1))
+
+
+/* ========================================================== */
+/* =================== FILE READ & WRITE ==================== */
+/* ========================================================== */
+#include <iostream>
+#include <fstream>
+// Use a stream to read files
+ofstream    // creates and write file
+ifstream    // reads from file
+fstream     // do both
+// Read a file
+ifstream myStream("filename.txt");
+std::string curLine;
+while (getline (myStream, curLine)) {
+    /* curLine holds a line */}
 
 
 /* ========================================================== */
@@ -501,6 +584,8 @@ if (regex_match(analysed_str, value_captured, my_regex)){
     value_captured.size();      // nb of elems that have been captured +1 (first elem is whole str)
     value_captured[1].str();    // 12000.000
 }
+"[a-z]"         // Every lowcase char
+"[A-Za-z0-9]"   // Every char and nb
 
 /* ========================================================== */
 /* ================== INSCTRUCTIONS COMPILO ================= */
@@ -519,14 +604,6 @@ Concrete types: their attributes are part of the def
 Abstract types: you dont know the attributes and you dont need to know
 about the implementation details, you only use the exposed methods 
 
-
-
-/* ========================================================== */
-/* ======================== KEYWORDS ======================== */
-/* ========================================================== */
-static
-outside of a class: tells the compiler the variable should be only considered for this file,
-and must not be imported when include
 
 
 /* ========================================================== */
