@@ -1,7 +1,10 @@
 ###############################
 ############# INT #############
 ###############################
-sys.maxint 
+sys.maxint
+str(nb)     # int to str
+int("10")   # str to int
+x = round(x, 2)
 
 ####################################
 ############# STRINGS ##############
@@ -11,7 +14,8 @@ string.lower() # lower-case string
 string.upper() # upper-case string
 string.capitalize() # first letter in upper case
 string.strip() # take off spaces at the beginning and end of the string
-stirng.replace('a', 'b') # replaces substring in string
+string.replace('a', 'b') # replaces substring in string
+string.find('word') # retruns place in str if found else -1
 title = "introduction"
 title.upper().center(20) '    INTRODUCTION    '
 
@@ -26,14 +30,19 @@ ma_liste = ['Bonjour', 'à', 'tous']
 " ".join(ma_liste)
 'Bonjour à tous'
 
-prenom = "Paul"
-nom = "Dupont"
-age = 21
-print("Je m'appelle {0} {1} et j'ai {2} ans.".format(prenom, nom, age))
-Je m'appelle Paul Dupont et j'ai 21 ans.
+# Format
+txt1 = "My name is {fname}, I'm {age}".format(fname = "John", age = 36)
+txt2 = "My name is {0}, I'm {1}".format("John", 36)
+txt3 = "My name is {}, I'm {}".format("John", 36) 
 
-r"test" # means that the string is to be treated as a raw string, which means all escape codes will be ignored
-raw_string = "%r"%normal_string # transformation during execution
+
+####################################
+############## PRINT ###############
+####################################
+print("Hello World!")
+print (f"Value: {value}") # Format
+print(f"Advancement: {i}", end='\r', flush=True) # Remplace la ligne précédente
+
 
 ####################################
 ############## LISTES ##############
@@ -46,8 +55,9 @@ presentation[2:] # De la troisième lettre (comprise) à la fin
 
 ma_liste = ['a', 'b', 'd', 'e']
 ma_liste.insert(2, 'c') # On insère 'c' à l'indice 2
-
-ma_liste.index(2) #Donne la position de 2
+ma_liste.append('f')    # Ajoute à la fin
+ma_liste.index(2)       # Donne la position de 2
+len(ma_liste)           # Donne nb éléments
 
 ma_liste1 = [3, 4, 5]
 ma_liste2 = [8, 9, 10]
@@ -76,6 +86,15 @@ l = [1, 4, 9, 16, 25, 36]
 print(*l)
 1 4 9 16 25 36
 
+
+###############################################
+#################  DATE/TIME  #################
+###############################################
+import datetime as dt
+dt.datetime.now()                           # Donne un objet datetime
+date_time = dt.fromtimestamp(1887639468)    # Donne un objet datetime
+
+
 ###############################################
 ###############  DICTIONNARIES  ###############
 ###############################################
@@ -90,7 +109,7 @@ monDictionnaire["pseudo"] = "Wain5542"
 monDictionnaire[0] = "a"
 monDictionnaire["a", 1] = "tour blanche"
 placard = {"chemise":3, "pantalon":6, "tee-shirt":7}
-
+d1.update(d2)       # Merge 2 dictionnaries
 
 # Deletion
 del placard["chemise"]
@@ -164,7 +183,7 @@ def main():
 if __name__== "__main__":
     main()
 
-#arguments
+#arguments / parameters
 p a.py arg1 arg2 arg3
 -> in the list sys.argv
 
@@ -173,6 +192,8 @@ p a.py arg1 arg2 arg3
 ####################################
 file = open(path, mode)
 file.close()
+with open(path, mode) as f:
+
 
 # Reading: only with 'r' mode
 file.read() # returns the whole file
@@ -195,6 +216,15 @@ fh.seek(-7, 1)
 
 
 ####################################
+############## REGEX ###############
+####################################
+import re
+reg_result = re.findall(regex, str)
+reg_result[0][0], reg_result[0][1] # groupes de capture
+
+
+
+####################################
 ############## IMPORT ##############
 ####################################
 from other_file import MyClass # from file in the same dir
@@ -209,7 +239,6 @@ sys.path.append(data_treatment_folder)
 ####################################
 ############### JSON ###############
 ####################################
-
 import json
 # Parse json string into a dictionnary
 person_dict = json.loads('{"name": "Bob", "languages": ["English", "Fench"]}')
@@ -225,8 +254,35 @@ json.dump(dict, f)
 # Pretty print
 print(json.dumps(person_dict, indent = 4, sort_keys=True))
 
+
+####################################
+#### DIRECTORIES/FILES HANDLING ####
+####################################
+import os
+for file in os.listdir(directory)   # Iterate through files in dir
+    # file is string of file name
+os.path.join(directory, filename)   # Conctenate path parts
+os.getcwd()                         # Get current working directory
+os.path.exists()                    # Does a path exists
+
+
+####################################
+###### EXECUTE SHELL COMMANDS ######
+####################################
+import os
+os.system('ls')
+
+
+####################################
+############## RANDOM ##############
+####################################
+import numpy as np
+rng = np.random.default_rng() #create a Generator
+rng.random() #nb in [0,1)
+rng.integers(100) #integers in [0,100)
+
+
 ####################################
 ############## OTHER ###############
 ####################################
-
-folder_content = os.system("ls") # Execute system commands
+type(var) # Gives variable type

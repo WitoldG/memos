@@ -69,6 +69,12 @@ std::cout << std::string(100, '*')  // print char n times
 
 
 /* ========================================================== */
+/* ===================== FLOAT / DOUBLE ===================== */
+/* ========================================================== */
+std::numerical_limits<double>::max() // double max
+
+
+/* ========================================================== */
 /* ======================= CONDITIONS ======================= */
 /* ========================================================== */
 if, switch like C
@@ -147,9 +153,10 @@ auto f1 = std::bind(f, std::placeholders::_2, 42, std::placeholders::_1) // f1(n
 /* ========================================================== */
 /* ========================= TUPLE ========================== */
 /* ========================================================== */
-tuple<double, char, std::string> my_tuple;              // Creation
-my_tuple = std::make_tuple(3.8, 'A', "Lisa Simpson");   // Set
-double val = std::get<0>(my_tuple)
+tuple<double, char, std::string> my_tuple;                  // Creation
+my_tuple = std::make_tuple(3.8, 'A', "Lisa Simpson");       // Set
+double val = std::get<0>(my_tuple);                         // Get
+std::tuple<a, b> my_fct(); const auto [c, d] = my_fct();    // Get fct return
 
 
 /* ========================================================== */
@@ -605,6 +612,12 @@ Abstract types: you dont know the attributes and you dont need to know
 about the implementation details, you only use the exposed methods 
 
 
+/* ========================================================== */
+/* =================== EXECUTER COMMANDE ==================== */
+/* ========================================================== */
+#include <cstdlib>
+std::system("ls");
+
 
 /* ========================================================== */
 /* ====================== COMPILATION ======================= */
@@ -624,6 +637,10 @@ g++ program.cpp -o program
 #include <stdexcept>
 throw std::invalid_argument("received inexistant hour mode");
 list: https://en.cppreference.com/w/cpp/error/exception
+catch (const std::runtime_error& e)
+{
+    cout << e.what();
+}
 
 
 
