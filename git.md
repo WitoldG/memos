@@ -86,3 +86,7 @@ If problem:
 
 # Local gitignore
 `.git/info/exclude`
+
+# Tag
+Afficher: `git tag`
+Faire une recherche dedans `git tag -l <mot >`

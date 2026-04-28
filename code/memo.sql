@@ -43,7 +43,7 @@ WHERE CONDITIONS
 
 CREATE
   CREATE TABLE Eleves(
-    id INT PRIMARY KEY NOT NULL,
+    id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     nom VARCHAR(100),
     prenom VARCHAR(100),
     date_naissance DATE
@@ -78,6 +78,7 @@ TRUNCATE
   \sf function_name       -- Get function code, test its existence 
   \dT+                    -- Give enum values
   EXPLAIN ANALYZE <query> -- Analyze a query, in term of time elapsed in each operation
+  command \watch 5        -- Relance command toutes les 5 sec
 
 
 -- Special tables

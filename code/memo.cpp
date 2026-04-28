@@ -125,12 +125,15 @@ vector<int> int_vector = {1, 2, 3}; // Creates a vector containing integers
 vector<int> uniform_vector(5, 10);  // Creates a vector of 5 elements set to 10
 std::vector<int> dest(src, src + n);// vector from array (n size)
 int_vector.push_back(4);            // Append at the end
+my_vector.size()                     // Get nb elts
 for(const auto& value: v) {         // Iterate with classic for
     std::cout << value << "\n";
 }
 for(auto it = std::begin(v); it != std::end(v); ++it) {     // Iterate with iterator
     std::cout << *it << "\n";
 }
+// vector to string inline
+std::string res = accumulate(v.begin(), v.end(), std::string(), [](std::string& s, int n) {return s + (s.empty()? "": ", ") + to_string(n);});
 /* Useful functions */
 /* In <iterator> */
 std::inserter(v)                    // Generates an insert iterator, when assigning object into the iterator, they are added
@@ -575,9 +578,9 @@ size_t written = strftime(char* date_parsed, size_t maxsize, const char* format,
 /* ========================== CAST ========================== */
 /* ========================================================== */
 static_cast<int>(other_value);
-to_string(i); //int to string
-to_string(f); //float to string
-stoi(s) //string to int
+std::to_string(i); //int to string
+std::to_string(f); //float to string
+std::stoi(s) //string to int
 
 
 /* ========================================================== */
