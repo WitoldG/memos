@@ -1,0 +1,135 @@
+/* Base du css */
+
+h1 /* Applique ceci à tous les h1 */
+h1, em /* Applique à h1 et em */
+.introduction /* Applique aux balises contenant class=introduction */
+.element:nth-child(2)/* Prend le 2eme element de classe element */
+tr:nth-child()/* S'applique à 1/2 lignes */
+#logo /* Applique à la balise avec id="logo" */
+* /* Sélecteur universel */
+h3 em /* Toutes les em situées dans une h3 */
+h3 + p /* Première balise p située après une h3 */
+a[title] /* Balise a qui possède l'attribut title */
+a[title="valeur"]
+a[title*="ici"] /* L'attribut doit contenir dans sa valeur le mot ici */
+/* Liste complète : https://www.w3.org/Style/css3-selectors-updates/WD-css3-selectors-20010126.fr.html#selectors */
+{
+    font-size: 16px;
+      16px, 1cm, 8mm : taille absolue;
+      xx-small, x-small, small, medium, large, x-large, xx-large : taille relative;
+      1em taille normale, nem(1.3em) n x plus grand que la taille normale;
+    font-family: police1, police2, serif; /* Si 1 pas dispo prends 2... */
+      Arial, "Arial Black", "Comic Sans MS", "Courier New", Georgia, Impact,
+      "Times New Roman", "Trebuchet MS", Verdana. marchent généralement;
+    font-style: italic, oblique, normal;
+    font-weight: bold, normal;
+    text-decoration: underline, line-through, overline, blink (marche pas partout), none;
+    text-align: left, center, right, justify;
+    text-indent: 3px; /*Alinéa*/
+    float: left, right;
+      /* Fait flotter une image (ou autre) à gauche/droite et met le texte autour */
+    clear: left, right, both;
+      /* Pour stopper le code qui flotte */
+    color: maroon;
+           #FFFFFF;
+           rgb(240, 96, 83);
+    list-style-type: none; /*Enleve points dans listes */
+
+    background;
+      background-color: ;/* Couleur de fond, placé dans body ça fait le fond du site */
+      background-image: url("neige.png");
+      background-attachement: fixed (fond fixe), scroll (suit la page);
+      background-repeat: no-repeat, repeat-x, repeat-y, repeat;
+      background-position : top right;
+                            30px 50px;
+      = background: url("neige.png") fixed no-repeat top right, url("soleil.png") fixed;
+    opacity:0 (transparent);
+
+    border;
+      border-width: 3px;
+      border-color: ... ;
+      border-style: none, solid, dotted, dashed, double, groove, ridge, inset, outset;
+      application à un seul coin : superpropriétés border-left, border-bottom
+      border-radius: 10px; /* Bordures arrondies */
+                     5px, 10px, 5px, 15px; /*Valeur différente pour chaque angle (topleft, clockwise) */
+                     20px / 10px; /* Courbure elliptique */
+    box-shadow / text-shadow: ombres;
+    border-collapse: collapse; /* pour que les cases des tableaux soient normalement rapprochées */
+    caption-side: top, bottom; /* place du titre d'un tableau */
+}
+
+a:hover /* Au survol */
+a:active /* Au clic (en pratique que pour les liens) */
+a:focus /* Élément sélectionné (pour liens et éléments de formulaires) */
+a:visited /* Liens déjà visités */
+
+
+@font-face { /* Déclarer une nouvelle police */
+    font-family: 'MaSuperPolice';
+    src: url('MaSuperPolice.eot') format('eot'), /* IE uniquement */
+         url('MaSuperPolice.woff') format('woff'), /* IE9 et autres */
+         url('MaSuperPolice.ttf') format('truetype'), /* IE9 et autres */
+         url('MaSuperPolice.svg') format('svg'); /* Seul reconnu par iPhone, iPad */
+}
+/* Exemple avec police dl sur fontsquirrel*/
+/* cf https://openclassrooms.com/en/courses/1603881-apprenez-a-creer-votre-site-web-avec-html5-et-css3/1605329-formatage-du-texte */
+@font-face { /* Définition d'une nouvelle police nommée CAC Champagne */
+    font-family: 'cac_champagneregular';
+    src: url('cac_champagne-webfont.eot');
+    src: url('cac_champagne-webfont.eot?#iefix') format('embedded-opentype'),
+         url('cac_champagne-webfont.woff') format('woff'),
+         url('cac_champagne-webfont.ttf') format('truetype'),
+         url('cac_champagne-webfont.svg#cac_champagneregular') format('svg');
+}
+
+h1 /* Utilisation de la police qu'on vient de définir sur les titres */
+{
+    font-family: 'cac_champagneregular', Arial, serif;
+}
+
+/* -------------------------------- */
+/* ----------Mise en page---------- */
+/* -------------------------------- */
+{
+  width: px ou %; /* Définit la taille du contenu, prend pas en compte les marges */
+  height: px ou %;
+  min-width, min-height, max-width, max-height: en px;
+  padding: marge intérieure (px); /* On peut préciser padding-top: ... */
+  margin: marge extérieure (px); /* Sinon margin: 2px 0 3px 1px; (top, clockwise) */
+          auto; /* Pour un bloc centré */
+  overflow: /* Trop de contenu pour la taille du block */
+            visible; /* Le texte dépasse */
+            hidden; /*On voit pas le texte en trop */
+            scroll; /* Barres de défilement */
+            auto; /* Met des barres de défilement si besoin */
+  word-wrap: break-word; /* Coupe automatiquement les mots trop larges */
+}
+/* Flexbox */
+{
+  display: flex;
+  flex-direction: row, column, row-reverse, column-reverse; /* defaut: row */
+  flex-wrap: nowrap; /* Pas de retour à la ligne */
+             wrap; /* Les elts passent à la ligne */
+             wrap-reverse; /* Les elts passent à la ligne à l'envers */
+  justify-content: /* Arrange selon l'axe principal cf:justify-content.png */
+                   flex-start, flex-end, center, space-between, space-around;
+  align-items: /* Arrange selon l'axe secondaire */
+               stretch, flex-start, flex-end, center, baseline;
+  /* Pour centre selon les 2 axes suffit de mettre margin:auto dans les éléments */
+  align-self: /* Permet d'aligner différemment un des éléments */
+  align-content: /* Organise les lignes entre elles quand y en a plusieurs cf align-content.png */
+                 flex-start, flex-end, center, space-between, space-around, stretch;
+  order: 3; /* A specifier pour un element, donne sa position à l'intérieur du block */
+  flex: 1; /* Dis à un élément comment il a le droit de grossir par rapport aux autres */
+           /* Super propriété qui regroupe flex-grow, flex-stretch, flex-basis */
+  display: /* Changer le type d'un élément */
+           inline; /* Elt d'une ligne */
+           block; /* Peut être redismensionné... */
+           inline-block; /* elts les uns à côté des autrs mais pouvant être redimensionnés */
+           none; /* elts non affichés */
+  vertical-align: /* Pour dire où placer des inline-block entre eux */
+                  baseline; /* aligne en bas (par défaut) */
+                  top; /* aligne en haut */
+                  middle; /* centre verticalement */
+                  bottom; /* aligne en bas */
+}
